@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convert HTML</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ryuze&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: url('YOUR_IMAGE_URL_HERE') no-repeat center center fixed; /* Replace with your image URL */
+            background-size: cover;
+            animation: backgroundAnimation 20s infinite alternate;
+            font-family: 'Roboto', sans-serif;
+        }
+        @keyframes backgroundAnimation {
+            0% {
+                background-position: center;
+            }
+            100% {
+                background-position: center 10%;
+            }
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+        }
+        .code-container {
+            background-color: #2d2d2d;
+            color: #d4d4d4;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            max-height: 60vh;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .button {
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .button:hover {
+            background-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        .checkbox-label {
+            transition: color 0.3s;
+        }
+        .checkbox-label:hover {
+            color: #3b82f6;
+        }
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        .input-field {
+            border: 2px solid #d1d5db;
+            transition: border-color 0.3s;
+        }
+        .input-field:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+        }
+        .signature-font {
+            font-family: 'Ryuze', cursive;
+        }
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center py-12">
+    <div class="container">
+        <div class="text-center mb-10">
+            <h1 class="text-5xl font-bold text-gray-800 mb-2 signature-font">Convert HTML</h1>
+            <p class="text-lg text-gray-600">Dapatkan kode HTML dari website apapun dengan mudah</p>
+            <p id="visitor-count" class="text-lg text-gray-600">Visitor Count: 0</p>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-grow">
+                    <input 
+                        type="text" 
+                        id="url-input" 
+                        placeholder="Masukkan URL website (contoh: https://example.com)" 
+                        class="input-field w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        value="https://"
+                    >
+                </div>
+                <button 
+                    id="fetch-btn" 
+                    class="button bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg flex items-center justify-center gap-2"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                    Get HTML
+                </button>
+            </div>
+            
+            <div class="mt-4 flex flex-col items-center gap-3">
+                <div class="flex items-center">
+                    <input type="checkbox" id="include-js" class="h-4 w-4 text-blue-600 rounded">
+                    <label for="include-js" class="checkbox-label text-gray-700 ml-2">Include JavaScript</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="include-css" class="h-4 w-4 text-blue-600 rounded">
+                    <label for="include-css" class="checkbox-label text-gray-700 ml-2">Include CSS</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="format-html" class="h-4 w-4 text-blue-600 rounded" checked>
+                    <label for="format-html" class="checkbox-label text-gray-700 ml-2">Format HTML</label>
+                </div>
+            </div>
+        </div>
+        
+        <div id="result-section" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">HTML Source Code</h2>
+                <button id="copy-btn" class="button bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
+                    Copy
+                </button>
+            </div>
+            <div id="result-container" class="code-container">
+                <div id="loading-indicator" class="hidden loading text-center py-10">
+                    <svg class="animate-spin h-8 w-8 text-blue-500 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p>Memproses permintaan...</p>
+                </div>
+                <pre id="html-output" class="hidden whitespace-pre-wrap"></pre>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p class="signature-font">Created by Ryuze</p>
+        </div>
+    </div>
+
+    <!-- Modal for Notification -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Ambil dana kaget: <a href="https://link.dana.id/danakaget?c=syxcdnkzm&r=gPcc9F&orderId=20250820101214171915010300166254636633656" target="_blank" class="text-blue-600">Click here</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Visitor Counter Logic
+        let visitorCount = localStorage.getItem('visitorCount') ? parseInt(localStorage.getItem('visitorCount')) : 0;
+        visitorCount++;
+        localStorage.setItem('visitorCount', visitorCount);
+        document.getElementById('visitor-count').innerText = `Visitor Count: ${visitorCount}`;
+
+        // Notify server about the new visitor
+        fetch('http://localhost:3000/notify-visitor', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ visitorCount })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Notification sent:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
+        // Modal Logic
+        const modal = document.getElementById("myModal");
+        const span = document.getElementsByClassName("close")[0];
+
+        // Show the modal when the page loads
+        window.onload = function() {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const fetchBtn = document.getElementById('fetch-btn');
+            const urlInput = document.getElementById('url-input');
+            const resultSection = document.getElementById('result-section');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const htmlOutput = document.getElementById('html-output');
+            const copyBtn = document.getElementById('copy-btn');
+            const includeJsCheckbox = document.getElementById('include-js');
+            const includeCssCheckbox = document.getElementById('include-css');
+            const formatHtmlCheckbox = document.getElementById('format-html');
+            
+            fetchBtn.addEventListener('click', fetchHTML);
+            
+            function fetchHTML() {
+                const url = urlInput.value.trim();
+                
+                if (!url) {
+                    alert('Silakan masukkan URL yang valid');
+                    return;
+                }
+                
+                try {
+                    new URL(url);
+                } catch (e) {
+                    alert('URL tidak valid. Pastikan URL memiliki format yang benar (contoh: https://example.com)');
+                    return;
+                }
+                
+                // Show loading state
+                resultSection.classList.remove('hidden');
+                loadingIndicator.classList.remove('hidden');
+                htmlOutput.classList.add('hidden');
+                
+                // Create a proxy URL to bypass CORS (this is just a demo - in production you'd need your own server-side proxy)
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                
+                fetch(proxyUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        let html = data.contents;
+                        
+                        // Basic cleanup
+                        if (!includeJsCheckbox.checked) {
+                            html = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+                        }
+                        
+                        if (!includeCssCheckbox.checked) {
+                            html = html.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, '');
+                        }
+                        
+                        if (formatHtmlCheckbox.checked) {
+                            html = formatHTML(html);
+                        }
+                        
+                        displayResult(html);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        displayResult(`Error: Gagal mengambil HTML. Kemungkinan disebabkan oleh:\n\n1. Website yang dituju memiliki proteksi CORS\n2. Koneksi internet terputus\n3. Server proxy tidak tersedia\n\nAnda bisa mencoba solusi lain seperti menggunakan Postman atau server-side proxy.\n\nDetail error: ${error.message}`);
+                    });
+            }
+            
+            function formatHTML(html) {
+                // Simple HTML formatting by adding indentation
+                let formatted = '';
+                let indent = 0;
+                
+                html = html.replace(/[\r\n]+/g, '');
+                
+                html = html.replace(/<([^>]+)>/g, function(match) {
+                    if (match.startsWith('</')) {
+                        indent = Math.max(indent - 1, 0);
+                        return '\n' + '  '.repeat(indent) + match;
+                    } else if (match.endsWith('/>')) {
+                        return '\n' + '  '.repeat(indent) + match;
+                    } else {
+                        const result = '\n' + '  '.repeat(indent) + match;
+                        indent += 1;
+                        return result;
+                    }
+                });
+                
+                return html.trim();
+            }
+            
+            function displayResult(content) {
+                loadingIndicator.classList.add('hidden');
+                htmlOutput.classList.remove('hidden');
+                htmlOutput.textContent = content;
+            }
+            
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = htmlOutput.textContent;
+                
+                navigator.clipboard.writeText(textToCopy)
+                    .then(() => {
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = `
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                                    <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                                </svg>
+                                Copy
+                            `;
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy: ', err);
+                        alert('Gagal menyalin ke clipboard');
+                    });
+            });
+            
+            // Allow pressing Enter in the input field
+            urlInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    fetchHTML();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
